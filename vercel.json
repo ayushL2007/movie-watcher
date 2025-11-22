@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/app.py",
+      "src": "app.py",  // Replace with your entry file (e.g., main.py if that's your Flask app)
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "api/app.py"
+      "dest": "app.py"  // Matches the src above
     }
   ]
 }
