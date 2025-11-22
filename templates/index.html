@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>I Love You Honey</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      font-family: 'Dancing Script', cursive, sans-serif;
+      overflow: hidden;
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+
+    .envelope {
+    position: relative;
+    width: 500px;
+    height: 360px;
+    cursor: pointer;
+    perspective: 1000px; /* Added */
+    }
+
+
+    /* Envelope body (red back) */
+    .envelope-back {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, #ff5252, #ff1744);
+      border-radius: 15px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.0);
+      z-index: 1;
+    }
+
+
+    /* Card that flips */
+    .card-container {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      transition: transform 1.3s cubic-bezier(0.6, 0, 0.4, 1);
+    }
+
+    .password {
+        padding: 20px;
+        border-radius: 15px;
+        margin-left: 30%;
+        background-color: #ff4081;
+    }
+
+    .card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 15px;
+      backface-visibility: hidden;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+
+    .card-front {
+      background: linear-gradient(145deg, #ff6b6b, #ff8e8e);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 38px;
+      text-shadow: 0 3px 10px rgba(0,0,0,0.4);
+    }
+
+    .card-back {
+      background: #fffaf0;
+      transform: rotateY(180deg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      box-sizing: border-box;
+    }
+
+    .heart {
+        max-width: 50px;
+        max-height: 50px;
+      font-size: 90px;
+      color: #e91e63;
+      animation: pulse 2s infinite;
+      margin-bottom: 10px;
+    }
+
+    .message {
+      font-size: 52px;
+      color: #c2185b;
+      margin: 15px 0;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .sub-message {
+      font-size: 30px;
+      color: #ff4081;
+      margin-top: 10px;
+    }
+
+    .passwordWarn{
+      color: #ff1744;
+    }
+
+   
+
+    .envelope:hover .card-container,
+    .envelope:active .card-container,
+    .envelope:focus-visible .card-container,
+    .envelope:focus-within .card-container,
+    .envelope:focus .card-container {
+      transform: rotateY(180deg);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="envelope">
+    <div class="card-container">
+      <div class="card card-front">
+        Click or Tap to Open
+      </div>
+
+      <div class="card card-back">
+        <img class="heart" src="{{ url_for('static', filename='images/heart.jpg') }}"/>
+        <div class="message">I Love You My Bubu</div>
+        <div class="sub-message">Forever & Ever ♡</div>
+        <div >
+         <input class="input-container" id="passwordInput" text" placeholder="Enter Password">
+         <br>
+         <button class="password" id="passwordBtn">Enter</button>
+         <div id="passwordWarn" class="passwordWarn"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+    <script>
+  async function postPassword() {
+    const password = document.getElementById("passwordInput");
+    const warning = document.getElementById("passwordWarn");
+    warning.setAttribute("visibility", "hidden");
+    try {
+      const response = await fetch("/submit-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ password: password.value })
+      });
+
+      const data = await response.json();
+      password.value="";
+      if(data.message!="Invalid password"){
+        window.location.href += data.message;
+      }
+      warning.textContent = data.message;
+      warning.setAttribute("visibility", "visible");
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  document.getElementById("passwordBtn").addEventListener("click", postPassword);
+
+  document.getElementById("passwordInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      postPassword();
+    }
+  });
+
+</script>
+
+
+
+</body>
+</html>
